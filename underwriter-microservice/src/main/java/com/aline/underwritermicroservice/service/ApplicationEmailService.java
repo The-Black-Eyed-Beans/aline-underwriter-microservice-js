@@ -28,7 +28,7 @@ public class ApplicationEmailService {
      * @param response The ApplyResponse returned by the Underwriter service.
      */
     public void sendApprovalEmail(ApplyResponse response) {
-        ApplicantResponse primaryApplicant = response.getApplicants().get(0);
+        /*ApplicantResponse primaryApplicant = response.getApplicants().get(0);
         String email = primaryApplicant.getEmail();
         String name = primaryApplicant.getFirstName();
         String membershipId = response.getCreatedMembers().get(0).getMembershipId();
@@ -42,7 +42,7 @@ public class ApplicationEmailService {
         variables.put("memberDashboardUrl", memberDashboardUrl);
 
         emailService.sendHtmlEmail("Welcome to Aline Financial", "application/approved-notification", email, variables);
-
+        */
     }
 
 
@@ -51,7 +51,7 @@ public class ApplicationEmailService {
      * @param response The ApplyResponse returned by the Underwriter service.
      */
     public void sendDenialEmail(ApplyResponse response) {
-        ApplicantResponse primaryApplicant = getPrimaryApplicantResponse(response);
+        /*ApplicantResponse primaryApplicant = getPrimaryApplicantResponse(response);
         String email = primaryApplicant.getEmail();
         String name = primaryApplicant.getFirstName();
         String landingPortalUrl = appConfig.getLandingPortal();
@@ -63,6 +63,7 @@ public class ApplicationEmailService {
         variables.put("landingPortalUrl", landingPortalUrl);
 
         emailService.sendHtmlEmail("Thank you for applying!", "application/denied-notification", email, variables);
+        */
     }
 
     /**
@@ -70,6 +71,7 @@ public class ApplicationEmailService {
      * @param response The ApplyResponse returned by the Underwriter service.
      */
     public void sendPendingEmail(ApplyResponse response) {
+        /*
         ApplicantResponse primaryApplicant = getPrimaryApplicantResponse(response);
         String email = primaryApplicant.getEmail();
         String name = primaryApplicant.getFirstName();
@@ -82,6 +84,7 @@ public class ApplicationEmailService {
         variables.put("landingPortalUrl", landingPortalUrl);
 
         emailService.sendHtmlEmail("Thank you for applying!", "application/pending-notification", email, variables);
+        */
     }
 
     private ApplicantResponse getPrimaryApplicantResponse(ApplyResponse response) {
