@@ -60,7 +60,6 @@ pipeline {
         
         stage('Deploy'){
             steps {
-                sh "aws configure"
                 sh "aws ecs update-service --cluster ecs-cluster-js --service underwriter-service --force-new-deployment"    
             }
         }
