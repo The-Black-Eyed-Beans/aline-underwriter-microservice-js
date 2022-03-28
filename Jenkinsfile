@@ -50,6 +50,7 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("https://${AWS_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com", "ecr:${AWS_DEFAULT_REGION}:jenkins.aws.credentials.js") {
+                        
                         def image = docker.build("${MICROSERVICE_NAME}")
                         image.push('latest')
                     } 
@@ -60,7 +61,14 @@ pipeline {
         
         stage('Deploy'){
             steps {
-                sh "aws ecs update-service --cluster ecs-cluster-js --service underwriter-service --force-new-deployment"    
+                script {
+                    docker.withRegistry("https://${AWS_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com", "ecr:${AWS_DEFAULT_REGION}:jenkins.aws.credentials.js") {
+                        //sh "aws ecr get-login-password | docker login --username AWS --password-stdin 086620157175.dkr.ecr.us-west-1.amazonaws.com"
+
+                        sh "aws ecs update-service --cluster ecs-cluster-js --service underwriter-service --force-new-deployment"    
+                    } 
+                }  
+                
             }
         }
 
