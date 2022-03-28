@@ -30,21 +30,21 @@ pipeline {
                 sh "mvn clean package -Dmaven.test.skip=true"
             }
         }
-        stage('Sonar Scan'){
-            steps{
-                withSonarQubeEnv('SonarQube-Server'){
-                    sh 'mvn verify sonar:sonar -Dmaven.test.failure.ignore=true'
-                }
-            }
-        }
+        //stage('Sonar Scan'){
+        //    steps{
+        //        withSonarQubeEnv('SonarQube-Server'){
+        //            sh 'mvn verify sonar:sonar -Dmaven.test.failure.ignore=true'
+        //        }
+        //    }
+        //}
         
-        stage('Quality Gate'){
+        /*stage('Quality Gate'){
             steps{
                 timeout(time: 1, unit: 'HOURS') {
                     waitForQualityGate abortPipeline: true
                 }
             }
-        }
+        }*/
         
         stage('Push') {
             steps {
