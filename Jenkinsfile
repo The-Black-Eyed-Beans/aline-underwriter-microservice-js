@@ -25,7 +25,7 @@ pipeline {
         
         stage('Build') {
             steps {
-                configFileProvider([configFile(fileId: "	backend-env-file", targetLocation: 'backend.env', variable: 'ENV_CONFIG')]) {
+                configFileProvider([configFile(fileId: "backend-env-file", targetLocation: 'backend.env', variable: 'ENV_CONFIG')]) {
                     load "backend.env"
                     sh "ls -a"
                     sh "git submodule init"
