@@ -21,8 +21,6 @@ pipeline {
                     echo "M2_HOME = ${M2_HOME}"
                 ''' 
                 configFileProvider([configFile(fileId: "backend.env", targetLocation: 'env.groovy', variable: 'ENV_CONFIG')]) {
-                    sh "ls -a"
-                    sh "cat env.groovy"
                     load "env.groovy"
                 }
             }
@@ -30,7 +28,6 @@ pipeline {
         
         stage('Build') {
             steps {
-                sh "ls -a"
                 sh "git submodule init"
                 sh "git submodule update"
                 sh "mvn clean package -Dmaven.test.skip=true"
@@ -40,10 +37,7 @@ pipeline {
            steps{
                 sh "ls -a"
                 withSonarQubeEnv('SonarQube-Server'){
-                    configFileProvider([configFile(fileId: "backend-env-file", targetLocation: 'env.groovy', variable: 'ENV_CONFIG')]) {
-                        load "env.groovy"
-                        sh 'mvn verify sonar:sonar -Dmaven.test.failure.ignore=true'
-                    }
+                    sh 'mvn verify sonar:sonar -Dmaven.test.failure.ignore=true'
                 }
            }
         }
