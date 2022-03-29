@@ -25,8 +25,8 @@ pipeline {
         
         stage('Build') {
             steps {
-                configFileProvider([configFile(fileId: "backend-env-file", targetLocation: 'backend.env', variable: 'ENV_CONFIG')]) {
-                    load "backend.env"
+                configFileProvider([configFile(fileId: "backend-env-file", targetLocation: 'env.groovy', variable: 'ENV_CONFIG')]) {
+                    load "env.groovy"
                     sh "ls -a"
                     sh "git submodule init"
                     sh "git submodule update"
@@ -38,8 +38,8 @@ pipeline {
            steps{
                 sh "ls -a"
                 withSonarQubeEnv('SonarQube-Server'){
-                    configFileProvider([configFile(fileId: "	backend-env-file", targetLocation: 'backend.env', variable: 'ENV_CONFIG')]) {
-                        load "backend.env"
+                    configFileProvider([configFile(fileId: "backend-env-file", targetLocation: 'env.groovy', variable: 'ENV_CONFIG')]) {
+                        load "env.groovy"
                         sh 'mvn verify sonar:sonar -Dmaven.test.failure.ignore=true'
                     }
                 }
