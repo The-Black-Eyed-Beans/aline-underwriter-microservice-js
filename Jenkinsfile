@@ -22,7 +22,9 @@ pipeline {
                 ''' 
                 
                 configFileProvider([configFile(fileId: "backend-env-file", targetLocation: 'env.groovy', variable: 'ENV_CONFIG')]) {
-                    load "env.groovy";
+                    sh "ls -a"
+                    sh "cat env.groovy"
+                    load "env.groovy"
                 }
             }
         }
