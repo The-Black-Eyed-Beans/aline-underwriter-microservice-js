@@ -20,18 +20,19 @@ pipeline {
                     echo "PATH = ${PATH}"
                     echo "M2_HOME = ${M2_HOME}"
                 ''' 
+                
+                configFileProvider([configFile(fileId: "backend-env-file", targetLocation: 'env.groovy', variable: 'ENV_CONFIG')]) {
+                    load "env.groovy";
+                }
             }
         }
         
         stage('Build') {
             steps {
-                configFileProvider([configFile(fileId: "backend-env-file", targetLocation: 'env.groovy', variable: 'ENV_CONFIG')]) {
-                    load "env.groovy"
-                    sh "ls -a"
-                    sh "git submodule init"
-                    sh "git submodule update"
-                    sh "mvn clean package -Dmaven.test.skip=true"
-                }
+                sh "ls -a"
+                sh "git submodule init"
+                sh "git submodule update"
+                sh "mvn clean package -Dmaven.test.skip=true"
             }
         }
         stage('Sonar Scan'){
