@@ -25,16 +25,24 @@ pipeline {
         
         stage('Build') {
             steps {
-                sh "git submodule init"
-                sh "git submodule update"
-                sh "mvn clean package -Dmaven.test.skip=true"
+                configFileProvider([configFile(fileId: "	backend-env-file", targetLocation: 'backend.env', variable: 'ENV_CONFIG')]) {
+                    load "backend.env"
+                    sh "ls -a"
+                    sh "git submodule init"
+                    sh "git submodule update"
+                    sh "mvn clean package -Dmaven.test.skip=true"
+                }
             }
         }
         stage('Sonar Scan'){
            steps{
-               withSonarQubeEnv('SonarQube-Server'){
-                   sh 'mvn verify sonar:sonar -Dmaven.test.failure.ignore=true'
-               }
+                sh "ls -a"
+                withSonarQubeEnv('SonarQube-Server'){
+                    configFileProvider([configFile(fileId: "	backend-env-file", targetLocation: 'backend.env', variable: 'ENV_CONFIG')]) {
+                        load "backend.env"
+                        sh 'mvn verify sonar:sonar -Dmaven.test.failure.ignore=true'
+                    }
+                }
            }
         }
         
@@ -60,15 +68,8 @@ pipeline {
 
         
         stage('Deploy'){
-            steps {
-                script {
-                    docker.withRegistry("https://${AWS_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com", "ecr:${AWS_DEFAULT_REGION}:jenkins.aws.credentials.js") {
-                        //sh "aws ecr get-login-password | docker login --username AWS --password-stdin 086620157175.dkr.ecr.us-west-1.amazonaws.com"
-
-                        sh "aws ecs update-service --cluster ecs-cluster-js --service underwriter-service --force-new-deployment"    
-                    } 
-                }  
-                
+            steps {    
+                sh "aws ecs update-service --cluster ecs-cluster-js --service underwriter-service --force-new-deployment"            
             }
         }
 
