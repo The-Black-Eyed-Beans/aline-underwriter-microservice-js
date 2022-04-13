@@ -14,15 +14,16 @@ pipeline {
     stages {
         stage ('Initialize') {
             steps {
+
                 // Verify path variables for mvn
                 sh '''
                     echo "Preparing to build, test and deploy ${MICROSERVICE_NAME}"
                     echo "PATH = ${PATH}"
                     echo "M2_HOME = ${M2_HOME}"
                 ''' 
-                configFileProvider([configFile(fileId: "backend.env", targetLocation: 'env.groovy', variable: 'ENV_CONFIG')]) {
-                    load "env.groovy"
-                }
+                sh "docker context use default" 
+                sh "aws s3 cp s3://js-env-vars/backend.env ."
+                sh "ls -a"
             }
         }
         
@@ -30,16 +31,15 @@ pipeline {
             steps {
                 sh "git submodule init"
                 sh "git submodule update"
-                sh "mvn clean package -Dmaven.test.skip=true"
+                sh "mvn install -Dmaven.test.skip=true"
             }
         }
         stage('Sonar Scan'){
-           steps{
-                sh "ls -a"
+            steps{
                 withSonarQubeEnv('SonarQube-Server'){
-                    sh 'mvn verify sonar:sonar -Dmaven.test.failure.ignore=true'
+                    sh 'mvn verify sonar:sonar'
                 }
-           }
+            }
         }
         
         stage('Quality Gate'){
@@ -54,7 +54,6 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry("https://${AWS_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com", "ecr:${AWS_DEFAULT_REGION}:jenkins.aws.credentials.js") {
-                        
                         def image = docker.build("${MICROSERVICE_NAME}")
                         image.push('latest')
                     } 
@@ -62,18 +61,22 @@ pipeline {
             }
         }
 
-        
         stage('Deploy'){
-            steps {    
-                sh "aws ecs update-service --cluster ecs-cluster-js --service underwriter-service --force-new-deployment"            
+            steps {  
+                withAWS(credentials: 'js-aws-credentials', region: 'us-west-1') { 
+                    sh "docker context use js-ecs"
+                    sh "aws ecr get-login-password | docker login --username AWS --password-stdin 086620157175.dkr.ecr.us-west-1.amazonaws.com"
+                    sh "docker compose up -d"
+                }
             }
         }
 
         stage('Cleanup') {
             steps {
+                sh "docker context use default" 
                 sh "docker image rm ${MICROSERVICE_NAME}:latest"
                 sh 'docker image rm $AWS_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$MICROSERVICE_NAME'
-                sh "docker image ls"
+                sh "docker image prune -f"
                 sh "mvn clean"
             }
         }
