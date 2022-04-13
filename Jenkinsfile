@@ -65,8 +65,8 @@ pipeline {
         stage('Deploy'){
             steps {  
                 withAWS(credentials: 'js-aws-credentials', region: 'us-west-1') { 
-                    sh "docker context use js-ecs"
                     sh "aws ecr get-login-password | docker login --username AWS --password-stdin 086620157175.dkr.ecr.us-west-1.amazonaws.com"
+                    sh "docker context use js-ecs"
                     sh "docker compose up -d"
                 }
             }
