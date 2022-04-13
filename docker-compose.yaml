@@ -10,3 +10,9 @@ services:
       - ./backend.env
     environment:
       - APP_PORT=8071
+
+x-aws-cloudformation:
+  Resources:
+    BankService:
+      Properties:
+        ServiceName: underwriter-service-js
