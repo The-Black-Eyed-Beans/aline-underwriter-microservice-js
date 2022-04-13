@@ -13,6 +13,6 @@ services:
 
 x-aws-cloudformation:
   Resources:
-    BankService:
+    UnderwriterService:
       Properties:
         ServiceName: underwriter-service-js
